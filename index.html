@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Warehouse Command Center</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+            background: #007bff;
+            padding: 8px 14px;
+            border-radius: 6px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        input {
+            padding: 8px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 8px 12px;
+            background: #28a745;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button.delete {
+            background: #dc3545;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        canvas {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Warehouse Command Center</h1>
+    <a href="profile.html">Developer Profile</a>
+</header>
+
+<div class="card">
+    <h2>Add Item</h2>
+    <input type="text" id="itemName" placeholder="Item name">
+    <input type="number" id="itemQty" placeholder="Quantity">
+    <button onclick="addItem()">Add Item</button>
+</div>
+
+<div class="card">
+    <h2>Inventory List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="inventoryTable"></tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Inventory Visualization</h2>
+    <canvas id="inventoryChart"></canvas>
+</div>
+
+<script>
+    let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
+
+    function saveData() {
+        localStorage.setItem("inventory", JSON.stringify(inventory));
+    }
+
+    function addItem() {
+        const name = document.getElementById("itemName").value.trim();
+        const qty = parseInt(document.getElementById("itemQty").value);
+
+        if (!name || isNaN(qty) || qty < 0) {
+            alert("Please enter valid item and quantity.");
+            return;
+        }
+
+        if (inventory[name]) {
+            inventory[name] += qty;
+        } else {
+            inventory[name] = qty;
+        }
+
+        saveData();
+        renderTable();
+        updateChart();
+
+        document.getElementById("itemName").value = "";
+        document.getElementById("itemQty").value = "";
+    }
+
+    function deleteItem(name) {
+        delete inventory[name];
+        saveData();
+        renderTable();
+        updateChart();
+    }
+
+    function renderTable() {
+        const table = document.getElementById("inventoryTable");
+        table.innerHTML = "";
+
+        for (let item in inventory) {
+            table.innerHTML += `
+                <tr>
+                    <td>${item}</td>
+                    <td>${inventory[item]}</td>
+                    <td>
+                        <button class="delete" onclick="deleteItem('${item}')">Delete</button>
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    let chart;
+
+    function updateChart() {
+        const ctx = document.getElementById('inventoryChart');
+
+        const labels = Object.keys(inventory);
+        const data = Object.values(inventory);
+
+        if (chart) chart.destroy();
+
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Quantity',
+                    data: data
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    }
+
+    renderTable();
+    updateChart();
+</script>
+
+</body>
+</html>
