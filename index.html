@@ -3,6 +3,7 @@
 <head>
     <title>Command Center Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         body {
             font-family: Arial;
@@ -51,6 +52,7 @@
         }
     </style>
 </head>
+
 <body>
 
 <nav>
@@ -59,6 +61,7 @@
 </nav>
 
 <div class="container">
+
     <h1>Warehouse Command Center</h1>
 
     <h2>Add Inventory Item</h2>
@@ -77,10 +80,15 @@
         </thead>
         <tbody id="inventoryTable"></tbody>
     </table>
+
+    <h2>Inventory Visualization</h2>
+    <canvas id="inventoryChart"></canvas>
+
 </div>
 
 <script>
     let inventory = JSON.parse(localStorage.getItem("inventory")) || {};
+    let chart;
 
     function saveData() {
         localStorage.setItem("inventory", JSON.stringify(inventory));
@@ -103,6 +111,7 @@
 
         saveData();
         renderTable();
+        updateChart();
 
         document.getElementById("itemName").value = "";
         document.getElementById("itemQty").value = "";
@@ -112,6 +121,7 @@
         delete inventory[name];
         saveData();
         renderTable();
+        updateChart();
     }
 
     function renderTable() {
@@ -129,7 +139,40 @@
         }
     }
 
+    function updateChart() {
+        const ctx = document.getElementById("inventoryChart");
+
+        const labels = Object.keys(inventory);
+        const data = Object.values(inventory);
+
+        // LOW STOCK LOGIC (OPTION B)
+        const colors = data.map(qty =>
+            qty < 10 ? 'red' : '#1e3a5f'
+        );
+
+        if (chart) chart.destroy();
+
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Quantity',
+                    data: data,
+                    backgroundColor: colors
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
     renderTable();
+    updateChart();
 </script>
 
 </body>
