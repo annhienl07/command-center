@@ -38,6 +38,11 @@
             color: white;
             border: none;
             cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .danger {
+            background-color: #c0392b;
         }
 
         table {
@@ -63,11 +68,15 @@
 <div class="container">
 
     <h1>Warehouse Command Center</h1>
+<p style="color: #555;">
+Real-time inventory tracking dashboard for ABC Logistics.
+</p>
 
     <h2>Add Inventory Item</h2>
     <input type="text" id="itemName" placeholder="Item Name">
     <input type="number" id="itemQty" placeholder="Quantity">
     <button onclick="addItem()">Add</button>
+    <button class="danger" onclick="clearAll()">Clear All Items</button>
 
     <h2>Inventory List</h2>
     <table>
@@ -95,33 +104,60 @@
     }
 
     function addItem() {
-        let name = document.getElementById("itemName").value.trim();
-        let qty = parseInt(document.getElementById("itemQty").value);
+    let name = document.getElementById("itemName").value.trim();
+    let qtyInput = document.getElementById("itemQty").value;
 
-        if (!name || isNaN(qty) || qty < 0) {
-            alert("Enter valid data");
-            return;
-        }
-
-        if (inventory[name]) {
-            inventory[name] += qty;
-        } else {
-            inventory[name] = qty;
-        }
-
-        saveData();
-        renderTable();
-        updateChart();
-
-        document.getElementById("itemName").value = "";
-        document.getElementById("itemQty").value = "";
+    // Check empty name
+    if (name === "") {
+        alert("Item name cannot be empty.");
+        return;
     }
+
+    // Check quantity is a valid number
+    if (!/^\d+$/.test(qtyInput)) {
+        alert("Quantity must be a positive whole number.");
+        return;
+    }
+
+    let qty = parseInt(qtyInput);
+
+    // Check negative (extra safety)
+    if (qty < 0) {
+        alert("Quantity cannot be negative.");
+        return;
+    }
+
+    // Prevent duplicate items
+    if (inventory.hasOwnProperty(name)) {
+        alert("This item already exists. Duplicates are not allowed.");
+        return;
+    }
+
+    inventory[name] = qty;
+
+    saveData();
+    renderTable();
+    updateChart();
+
+    document.getElementById("itemName").value = "";
+    document.getElementById("itemQty").value = "";
+}
 
     function deleteItem(name) {
         delete inventory[name];
         saveData();
         renderTable();
         updateChart();
+    }
+
+    // 🔴 PHASE 4 FEATURE
+    function clearAll() {
+        if (confirm("Are you sure you want to clear all items?")) {
+            inventory = {};
+            localStorage.removeItem("inventory");
+            renderTable();
+            updateChart();
+        }
     }
 
     function renderTable() {
@@ -145,7 +181,6 @@
         const labels = Object.keys(inventory);
         const data = Object.values(inventory);
 
-        // LOW STOCK LOGIC (OPTION B)
         const colors = data.map(qty =>
             qty < 10 ? 'red' : '#1e3a5f'
         );
