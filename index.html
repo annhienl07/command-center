@@ -44,6 +44,15 @@
         .danger {
             background-color: #c0392b;
         }
+.warning {
+    color: red;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.input-error {
+    border: 2px solid red;
+}
 
         table {
             width: 100%;
@@ -52,9 +61,10 @@
         }
 
         th, td {
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-        }
+    padding: 12px;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+}
     </style>
 </head>
 
@@ -74,8 +84,11 @@ Real-time inventory tracking dashboard for ABC Logistics.
 
     <h2>Add Inventory Item</h2>
     <input type="text" id="itemName" placeholder="Item Name">
-    <input type="number" id="itemQty" placeholder="Quantity">
-    <button onclick="addItem()">Add</button>
+<input type="number" id="itemQty" placeholder="Quantity">
+<button onclick="addItem()">Add</button>
+<button class="danger" onclick="clearAll()">Clear All Items</button>
+
+<p id="formMessage" class="warning"></p>
     <button class="danger" onclick="clearAll()">Clear All Items</button>
 
     <h2>Inventory List</h2>
@@ -103,33 +116,36 @@ Real-time inventory tracking dashboard for ABC Logistics.
         localStorage.setItem("inventory", JSON.stringify(inventory));
     }
 
-    function addItem() {
-    let name = document.getElementById("itemName").value.trim();
-    let qtyInput = document.getElementById("itemQty").value;
+ function addItem() {
+    let nameInput = document.getElementById("itemName");
+    let qtyInput = document.getElementById("itemQty");
+    let message = document.getElementById("formMessage");
 
-    // Check empty name
+    let name = nameInput.value.trim();
+    let qtyValue = qtyInput.value;
+
+    // Reset styles
+    message.textContent = "";
+    nameInput.classList.remove("input-error");
+    qtyInput.classList.remove("input-error");
+
     if (name === "") {
-        alert("Item name cannot be empty.");
+        message.textContent = "Item name cannot be empty.";
+        nameInput.classList.add("input-error");
         return;
     }
 
-    // Check quantity is a valid number
-    if (!/^\d+$/.test(qtyInput)) {
-        alert("Quantity must be a positive whole number.");
+    if (!/^\d+$/.test(qtyValue)) {
+        message.textContent = "Quantity must be a positive whole number.";
+        qtyInput.classList.add("input-error");
         return;
     }
 
-    let qty = parseInt(qtyInput);
+    let qty = parseInt(qtyValue);
 
-    // Check negative (extra safety)
-    if (qty < 0) {
-        alert("Quantity cannot be negative.");
-        return;
-    }
-
-    // Prevent duplicate items
     if (inventory.hasOwnProperty(name)) {
-        alert("This item already exists. Duplicates are not allowed.");
+        message.textContent = "This item already exists.";
+        nameInput.classList.add("input-error");
         return;
     }
 
@@ -139,8 +155,8 @@ Real-time inventory tracking dashboard for ABC Logistics.
     renderTable();
     updateChart();
 
-    document.getElementById("itemName").value = "";
-    document.getElementById("itemQty").value = "";
+    nameInput.value = "";
+    qtyInput.value = "";
 }
 
     function deleteItem(name) {
