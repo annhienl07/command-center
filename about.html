@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Developer Profile</title>
+
     <style>
         body {
             font-family: Arial;
@@ -24,8 +25,21 @@
         .container {
             padding: 40px;
         }
+
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 700px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
     </style>
 </head>
+
 <body>
 
 <nav>
@@ -34,11 +48,32 @@
 </nav>
 
 <div class="container">
-    <h1>Developer Profile</h1>
-    <p><strong>Name:</strong> Nhien Luu</p>
-    <p><strong>Course:</strong> BUS 237</p>
-    <p><strong>Project:</strong> Warehouse Command Center</p>
-    <p>This project uses HTML, CSS, JavaScript and localStorage to manage warehouse inventory data.</p>
+    <div class="card">
+        <h1>Developer Profile</h1>
+
+        <p><strong>Name:</strong> An Nhien (Natalie) Luu</p>
+        <p><strong>Course:</strong> BUS 237</p>
+        <p><strong>Project:</strong> Inventory Command Center</p>
+
+        <h2>About Me</h2>
+        <p>
+            I developed this Inventory Command Center as a web-based solution
+            for ABC Logistics to help track warehouse inventory efficiently.
+            The system uses HTML, CSS, JavaScript, and localStorage to ensure
+            that data remains saved even after refreshing the page.
+        </p>
+
+        <h2>Technical Skills Demonstrated</h2>
+        <ul>
+            <li>Client-side data storage using localStorage</li>
+            <li>Data validation and error handling</li>
+            <li>Interactive visualization using Chart.js</li>
+            <li>Low-stock alert system (Signature Move – Option B)</li>
+        </ul>
+
+        <h2>Contact</h2>
+        <p>Email: anl13@sfu.ca</p>
+    </div>
 </div>
 
 </body>
